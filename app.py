@@ -1,5 +1,6 @@
 from cs50 import SQL
 
+from darkdetect import isDark
 from flask import Flask, request, render_template, session, redirect, Response
 from flask_session import Session
 
@@ -29,6 +30,9 @@ def after_request(response):
 @app.route("/")
 @login_required
 def index() -> tuple[str, int] | str:
+    if "GET" == request.method:
+        return render_template("index.html")
+    
     return render_template("index.html")
 
 
@@ -47,7 +51,10 @@ def login() -> tuple[str, int] | Response:
     if not password:
         return apology("Missing password")
     
-    user = db.execute("SELECT id, password FROM user WHERE username=?")
+    user = db.execute("SELECT id, password FROM user WHERE username=?", username)
+
+    if len(user) < 1:
+        return apology("User not does not exist")
 
     if not check_password_hash(user[0]["password"], password):
         return apology("Incorrect password")
@@ -55,6 +62,7 @@ def login() -> tuple[str, int] | Response:
     session["user_id"] = user[0]["id"]
 
     return redirect('/')
+
 
 @app.route("/register", methods=["GET", "POST"])
 def register() -> tuple[str, int] | Response:
@@ -85,8 +93,9 @@ def register() -> tuple[str, int] | Response:
     session["user_id"] = db.execute("SELECT id FROM user WHERE username=?", username)[0]["id"]
 
     return redirect("/")
-    
 
+
+@app.route('/logout')
 def logout() -> tuple[str, int] | Response:
     session.clear()
     return redirect("/login")

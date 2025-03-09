@@ -16,7 +16,32 @@
         <title>Bookstore: {% block title %}{% endblock %}</title>
     </head>
     <body>
-        {% block main %}{% endblock %}
+        <!--Navbar from pset10 finance-->
+        <nav class="bg-light border navbar navbar-expand-md navbar-light">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/">Home</a>
+                <button aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-bs-target="#navbar" data-bs-toggle="collapse" type="button">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbar">
+                    {% if session["user_id"] %}
+                        <ul class="navbar-nav me-auto mt-2">
+                            <li class="nav-item"><a class="nav-link" href="#">TODO</a></li>
+                        </ul>
+                        <ul class="navbar-nav ms-auto mt-2">
+                            <li class="nav-item"><a class="nav-link" href="/logout">Log Out</a></li>
+                        </ul>
+                    {% else %}
+                        <ul class="navbar-nav ms-auto mt-2">
+                            <li class="nav-item"><a class="nav-link" href="/login">Log In</a></li>
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
+        <div class="container py-5 text-center">
+            {% block main %}{% endblock %}
+        </div>
     </body>
 
 </html>
