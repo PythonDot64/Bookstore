@@ -3,14 +3,12 @@ main %}
 <ul>
   {% for i in range(books | length) %}
   <li>
-    <img alt="{{ books[i].title }}" src="{{ img[i] }}" />
-    {{ books[i].title }} by [{% for author_name in books[i].author_name %}{{
-    author_name }}{% if not loop.last %}, {% endif %}{% endfor %}] ({{
-    books[i].first_publish_year }})
     <form action="/details" id="{{ books[i].lending_edition_s }}">
-      <div class="mb-3">
-        <button class="btn btn-primary">Borrow</button>
-      </div>
+      <img alt="{{ books[i].title }}" src="{{ img[i] }}" />
+      {{ books[i].title }} by [{% for author_name in books[i].author_name %}{{
+      author_name }}{% if not loop.last %}, {% endif %}{% endfor %}] ({{
+      books[i].first_publish_year }})
+      <button class="btn btn-primary">Borrow</button>
     </form>
   </li>
   {% endfor %}

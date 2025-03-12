@@ -6,6 +6,7 @@ from typing import Final
 from requests_cache import CachedSession
 import requests
 import werkzeug
+import logging
 
 from helper import login_required, apology
 
@@ -19,13 +20,13 @@ Session(app)
 
 book_api_session = CachedSession(
     cache_name='cache/api', 
-    expire_after=600,
+    expire_after=6000,
     stale_if_error=True,
 )
 
 img_api_session = CachedSession(
     cache_name='cache/img', 
-    expire_after=600,
+    expire_after=6000,
     stale_if_error=True,
 )
 
@@ -53,6 +54,13 @@ db.execute(
         FOREIGN KEY (book_year) REFERENCES books(year),\
         FOREIGN KEY (book_rating) REFERENCES books(rating)\
     );'
+)
+
+logging.basicConfig(
+    filename='log.log', 
+    encoding='utf-8', 
+    filemode='w',
+    level=logging.DEBUG
 )
 
 
@@ -130,6 +138,11 @@ def logout() -> tuple[str, int] | werkzeug.wrappers.response.Response:
 @app.route('/search')
 @login_required
 def search() -> tuple[str | None, int] | str | None:
+    logger = logging.getLogger(__name__)
+    logging.basicConfig(filename='example.log', encoding='utf-8', level=logging.DEBUG)
+
+    logger.debug("Testing logging")
+
     search: str | None = request.args.get('q')
 
     if not search:
@@ -137,23 +150,35 @@ def search() -> tuple[str | None, int] | str | None:
     
     book_url: Final = f'https://openlibrary.org/search.json?q={search}'
 
-    response = book_api_session.get(book_url)
 
     try:
+        response = book_api_session.get(book_url)
         response_json: dict[str, list[dict[str, str | int | float]]] = response.json()
     except Exception as e:
         return apology(f'{e}', response.status_code)
-    try:
-        for book in response_json['docs']:
-            if 'cover_edition_key' not in book:
-                img_response = 'No image available'
-                continue
+    
+    imgs = []
+    for book in response_json.get('docs', []):
+        if 'cover_edition_key' in book:
             img_url: str = f'https://covers.openlibrary.org/b/olid/{book["cover_edition_key"]}-M.jpg'
-            img_response = img_api_session.get(img_url)
-    except Exception as e:
-        return apology(f'{e}', img_response.status_code)
+            try:
+                img_api_session.get(img_url)
+                imgs.append({
+                    'book': book,
+                    'img_url': img_url
+                })
+                logger.info('Image URL: %s for %s', img_url, book["title"])
+            except requests.RequestException:
+                imgs.append({'book': book, 'img_url': 'No image available'})
+                logger.info('No image available for %s', book["title"])
+        else:
+            imgs.append({
+                'book': book,
+                'img_url': 'No image available'
+            })
+            logger.info('No image available for %s', book["title"])
 
-    return render_template('search.html', books=response_json['docs'], img=img_response)
+    return render_template('search.html', books=response_json['docs'], img=img_api_session.cache.urls(expired=False))
 
 
 @app.route('/details')
