@@ -1,11 +1,17 @@
 {% extends "layout.html" %} {% block title %} Search {% endblock %} {% block
 main %}
 <ul>
-  {% for book in books %}
+  {% for i in range(books | length) %}
   <li>
-    {{ book.title }} by [{% for author_name in book.author_name %}{{ author_name
-    }}{% if not loop.last %}, {% endif %}{% endfor %}] ({{
-    book.first_publish_year }})
+    <img alt="{{ books[i].title }}" src="{{ img[i] }}" />
+    {{ books[i].title }} by [{% for author_name in books[i].author_name %}{{
+    author_name }}{% if not loop.last %}, {% endif %}{% endfor %}] ({{
+    books[i].first_publish_year }})
+    <form action="/details" id="{{ books[i].lending_edition_s }}">
+      <div class="mb-3">
+        <button class="btn btn-primary">Borrow</button>
+      </div>
+    </form>
   </li>
   {% endfor %}
 </ul>

@@ -1,15 +1,14 @@
 # all function is from finance from pset 10
 
-import requests
 
 from flask import redirect, render_template, session
 from functools import wraps
 
 
-def apology(message, code=400):
+def apology(message: str, code: int=400) -> str:
     """Render message as an apology to user."""
 
-    def escape(s):
+    def escape(s: str) -> str:
         """
         Escape special characters.
 
