@@ -4,4 +4,9 @@ a .noline {
 
 ul {
     list-style-type: none;
+    max-height: 250px;
+}
+
+.search {
+    field-sizing: content;
 }

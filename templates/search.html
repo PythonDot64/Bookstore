@@ -1,14 +1,21 @@
 {% extends "layout.html" %} {% block title %} Search {% endblock %} {% block
 main %}
 <ul>
-  {% for i in range(books | length) %}
+  {% for i in range(length) %}
   <li>
-    <form action="/details" id="{{ books[i].lending_edition_s }}">
-      <img alt="{{ books[i].title }}" src="{{ img[i] }}" />
-      {{ books[i].title }} by [{% for author_name in books[i].author_name %}{{
-      author_name }}{% if not loop.last %}, {% endif %}{% endfor %}] ({{
-      books[i].first_publish_year }})
-      <button class="btn btn-primary">Borrow</button>
+    <form action="/details" method="get">
+      <div class="mb-3">
+        <input type="hidden" name="key" value="{{ books[i].key }}" />
+        <input type="hidden" name="image" value="{{ img[i] }}" />
+        {% if img[i] != 'Image not found' %}
+        <img alt="{{ books[i].title }}" src="{{ img[i] }}" />
+        {% else %}
+        <h3>No image</h3>
+        {% endif %} {{ books[i].title }} [by {% for author_name in
+        books[i].author_name %}{{ author_name }}{% if not loop.last %}, {% endif
+        %}{% endfor %}] ({{ books[i].first_publish_year }})
+        <button class="btn btn-primary" type="submit">View Book</button>
+      </div>
     </form>
   </li>
   {% endfor %}

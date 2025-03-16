@@ -1,14 +1,13 @@
-from cs50 import SQL
+from datetime import timedelta
+from cs50 import SQL # type: ignore
 
-from flask import Flask, request, render_template, session, redirect, Response
+from flask import Flask, request, render_template, session, redirect
 from flask_session import Session
 from typing import Final
-from requests_cache import CachedSession
-import requests
+from requests_cache import CachedSession as api_cache
 import werkzeug
-import logging
 
-from helper import login_required, apology
+from helper import login_required, apology # type: ignore
 
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -18,16 +17,9 @@ app.config['SESSION_PERMANENT'] = False
 app.config['SESSION_TYPE'] = 'filesystem'
 Session(app)
 
-book_api_session = CachedSession(
-    cache_name='cache/api', 
-    expire_after=6000,
-    stale_if_error=True,
-)
-
-img_api_session = CachedSession(
-    cache_name='cache/img', 
-    expire_after=6000,
-    stale_if_error=True,
+book_api_session = api_cache(
+    cache_name='cache/books.db', 
+    expire_after=timedelta(days=1),
 )
 
 db: SQL = SQL('sqlite:///bookstore.db')
@@ -56,23 +48,15 @@ db.execute(
     );'
 )
 
-logging.basicConfig(
-    filename='log.log', 
-    encoding='utf-8', 
-    filemode='w',
-    level=logging.DEBUG
-)
-
 
 @app.route('/')
 @login_required
-def index() -> tuple[str | None, int] | str | None:
+def index() -> str:
     return render_template('index.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login() -> tuple[str, int] | werkzeug.wrappers.response.Response | str:
-    session.clear()
     if request.method == 'GET':
         return render_template('login.html')
     
@@ -137,51 +121,49 @@ def logout() -> tuple[str, int] | werkzeug.wrappers.response.Response:
 
 @app.route('/search')
 @login_required
-def search() -> tuple[str | None, int] | str | None:
-    logger = logging.getLogger(__name__)
-    logging.basicConfig(filename='example.log', encoding='utf-8', level=logging.DEBUG)
-
-    logger.debug("Testing logging")
-
+def search() -> werkzeug.wrappers.response.Response | tuple[str, int] | str:
     search: str | None = request.args.get('q')
-
     if not search:
         return apology('Missing search query')
-    
+
+    def get_urls(books: list[dict[str, str | int | float]]) -> list[str]:
+        urls: list[str] = []
+
+        for book in books:
+            if 'cover_edition_key' not in book:
+                urls.append('Image not found')
+                continue
+            urls.append(f'https://covers.openlibrary.org/b/olid/{book["cover_edition_key"]}-M.jpg')
+        return urls
+
     book_url: Final = f'https://openlibrary.org/search.json?q={search}'
 
 
     try:
         response = book_api_session.get(book_url)
-        response_json: dict[str, list[dict[str, str | int | float]]] = response.json()
+        books: list[dict[str, str | int | float]] = response.json()['docs']
     except Exception as e:
-        return apology(f'{e}', response.status_code)
+        return apology(f'{e}', 500)
     
-    imgs = []
-    for book in response_json.get('docs', []):
-        if 'cover_edition_key' in book:
-            img_url: str = f'https://covers.openlibrary.org/b/olid/{book["cover_edition_key"]}-M.jpg'
-            try:
-                img_api_session.get(img_url)
-                imgs.append({
-                    'book': book,
-                    'img_url': img_url
-                })
-                logger.info('Image URL: %s for %s', img_url, book["title"])
-            except requests.RequestException:
-                imgs.append({'book': book, 'img_url': 'No image available'})
-                logger.info('No image available for %s', book["title"])
-        else:
-            imgs.append({
-                'book': book,
-                'img_url': 'No image available'
-            })
-            logger.info('No image available for %s', book["title"])
+    urls: list[str] = get_urls(books)
 
-    return render_template('search.html', books=response_json['docs'], img=img_api_session.cache.urls(expired=False))
+    return render_template('search.html', books=books, img=urls, length=len(books))
 
 
-@app.route('/details')
+@app.route('/details', methods=['GET', 'POST'])
 @login_required
-def details() -> tuple[str | None, int] | werkzeug.wrappers.response.Response:
-    return redirect('/')
+def details() -> tuple[str, int] | str:
+    i: str | None = request.args.get('key')
+    print(i)
+    img: str | None = request.args.get('image')
+    print(img)
+
+    print(img)
+
+    return render_template('details.html', book=book_api_session.get(f'https://www.openlibrary.org{i}.json').json(), img=img)
+
+
+@app.route('/cart')
+def cart() -> tuple[str, int] | str:
+    db.execute("SELECT * FROM cart WHERE user_id=?", session['user_id'])
+    return render_template('cart.html')

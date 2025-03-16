@@ -1,0 +1,10 @@
+{% extends "layout.html" %} {% block title %}Home{% endblock %} {% block main %}
+<h1>{{ book.title }}</h1>
+<hr />
+<div class="mb-3">
+  <form>
+    <img alt="{{ book.title }}" src="{{ img }}" />
+    <p>{{ book.description.value}}</p>
+  </form>
+</div>
+{% endblock %}

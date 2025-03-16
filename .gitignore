@@ -229,3 +229,6 @@ $RECYCLE.BIN/
 cache
 flask_session
 settings.json
+
+.gitignore
+typings

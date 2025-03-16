@@ -3,7 +3,7 @@
 <html lang="en">
   <head>
     <!-- Import style.css -->
-    <link href="styles.css" rel="stylesheet" />
+    <link href="static\styles.css" rel="stylesheet" />
 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -41,7 +41,9 @@
         <div class="collapse navbar-collapse" id="navbar">
           {% if session["user_id"] %}
           <ul class="navbar-nav me-auto mt-2">
-            <li class="nav-item"><a class="nav-link" href="#">TODO</a></li>
+            <li class="nav-item">
+              <a class="nav-link" href="/cart">Borrowed books</a>
+            </li>
           </ul>
           <ul class="navbar-nav ms-auto mt-2">
             <li class="nav-item">
@@ -50,7 +52,7 @@
           </ul>
           <form class="form-inline" action="/search" method="get">
             <input
-              class="form-control mr-sm-2"
+              class="search form-control mr-sm-2"
               type="search"
               placeholder="Search"
               aria-label="Search"
