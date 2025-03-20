@@ -2,3 +2,5 @@ Flask
 CS50
 requests_cache
 flask_session
+asyncio
+aiohttp_client_cache

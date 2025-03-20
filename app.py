@@ -1,14 +1,26 @@
-from datetime import timedelta
+import asyncio
+
+from aiohttp_client_cache.session import CachedSession
+from aiohttp_client_cache import SQLiteBackend
+
 from cs50 import SQL # type: ignore
+
+from datetime import timedelta
 
 from flask import Flask, request, render_template, session, redirect
 from flask_session import Session
-from typing import Final
-from requests_cache import CachedSession as api_cache
-import werkzeug
+
+from functools import cache
 
 from helper import login_required, apology # type: ignore
 
+from operator import itemgetter
+
+from requests_cache import CachedSession as api_cache
+
+from typing import Any, Final
+
+import werkzeug
 from werkzeug.security import check_password_hash, generate_password_hash
 
 app: Flask = Flask(__name__)
@@ -17,42 +29,39 @@ app.config['SESSION_PERMANENT'] = False
 app.config['SESSION_TYPE'] = 'filesystem'
 Session(app)
 
-book_api_session = api_cache(
+general_book_cache = api_cache(
     cache_name='cache/books.db', 
     expire_after=timedelta(days=1),
 )
 
+book_id_cache = SQLiteBackend(
+    cache_name='/cache/book_word.db',
+    expire_after=timedelta(days=1),
+)
+
 db: SQL = SQL('sqlite:///bookstore.db')
-db.execute(
-    'CREATE TABLE IF NOT EXISTS user (\
-        id INTEGER PRIMARY KEY AUTOINCREMENT,\
-        username TEXT NOT NULL,\
-        password TEXT NOT NULL\
-    );'
-)
-db.execute(
-    'CREATE TABLE IF NOT EXISTS cart(\
-        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\
-        book_id INTEGER NOT NULL,\
-        book_name TEXT NOT NULL,\
-        book_author TEXT NOT NULL,\
-        book_price NUMERIC NOT NULL,\
-        book_year NUMERIC NOT NULL,\
-        book_rating REAL NOT NULL,\
-        FOREIGN KEY (book_id) REFERENCES books(id),\
-        FOREIGN KEY (book_name) REFERENCES books(title),\
-        FOREIGN KEY (book_author) REFERENCES books(author),\
-        FOREIGN KEY (book_price) REFERENCES books(price),\
-        FOREIGN KEY (book_year) REFERENCES books(year),\
-        FOREIGN KEY (book_rating) REFERENCES books(rating)\
-    );'
-)
+
+# db.execute('read create_table.sql'), fix later
 
 
 @app.route('/')
 @login_required
 def index() -> str:
-    return render_template('index.html')
+    def get_urls(books: Any) -> list[str]:
+        urls: list[str] = []
+
+        for i in range(5):
+            book = books[i]
+            if 'cover_edition_key' not in book:
+                urls.append('Image not found')
+                continue
+            urls.append(f'https://www.covers.openlibrary.org/b/olid/{book['cover_edition_key']}-S.jpg')
+        return urls
+    last_search = db.execute('SELECT search FROM last_search WHERE user_id=?', session['user_id'])
+    if len(last_search) < 1:
+        return render_template('index.html', books='')
+    books: Any = general_book_cache.get(last_search[0]['search']).json()['docs']
+    return render_template('index.html', books=books, img=get_urls(books))
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -133,15 +142,39 @@ def search() -> werkzeug.wrappers.response.Response | tuple[str, int] | str:
             if 'cover_edition_key' not in book:
                 urls.append('Image not found')
                 continue
-            urls.append(f'https://covers.openlibrary.org/b/olid/{book["cover_edition_key"]}-M.jpg')
+            urls.append(f'https://covers.openlibrary.org/b/olid/{book['cover_edition_key']}-M.jpg')
         return urls
 
-    book_url: Final = f'https://openlibrary.org/search.json?q={search}'
+    
+    sort_by: str | None= request.args.get('sort')
+
+    if not sort_by:
+        return apology('You cannot sort by nothing')
+
+    match sort_by:
+        case 'random':
+            book_url: str = f'https://www.openlibrary.org/search.json?title={search}&sort=random.hourly'
+        case 'rating1':
+            book_url: str = f'https://www.openlibrary.org/search.json?title={search}&sort=rating'
+        case 'rating2':
+            book_url: str = f'https://www.openlibrary.org/search.json?title={search}&sort=rating asc'
+        case 'title':
+            book_url: str = f'https://www.openlirary.org/search.json?title={search}&sort=title'
+        case 'year':
+            book_url: str = f'https://www.openlibrary.org/search.json?title={search}$sort=new'
+        case _:
+            return apology(f'{sort_by.capitalize} is not allowed')
 
 
-    try:
-        response = book_api_session.get(book_url)
-        books: list[dict[str, str | int | float]] = response.json()['docs']
+    db.execute('UPDATE last_search SET search=? WHERE user_id=?', book_url, session['user_id'])
+    changes: list[dict[str, int]] = db.execute('SELECT changes();')[0]['changes()']
+
+    if changes == 0:
+        db.execute('INSERT INTO last_search (search, user_id) VALUES (?, ?)', book_url, session['user_id'])
+
+    try:     
+        response = general_book_cache.get(book_url)
+        books: Any = response.json()['docs']
     except Exception as e:
         return apology(f'{e}', 500)
     
@@ -153,17 +186,22 @@ def search() -> werkzeug.wrappers.response.Response | tuple[str, int] | str:
 @app.route('/details', methods=['GET', 'POST'])
 @login_required
 def details() -> tuple[str, int] | str:
-    i: str | None = request.args.get('key')
-    print(i)
-    img: str | None = request.args.get('image')
-    print(img)
+    book: str | None = request.form.get('book')
+    work: str | None = request.form.get('key')
+    img: Final = f'https://www.covers.openlibrary.org/b/olid/{request.form.get('image')}-L.jpg'
 
-    print(img)
-
-    return render_template('details.html', book=book_api_session.get(f'https://www.openlibrary.org{i}.json').json(), img=img)
+    return render_template('details.html', work=general_book_cache.get(f'https://www.openlibrary.org{work}.json').json(), img=img, id=work, book=book)
 
 
-@app.route('/cart')
+@app.route('/cart', methods=['GET', 'POST'])
+@login_required
 def cart() -> tuple[str, int] | str:
-    db.execute("SELECT * FROM cart WHERE user_id=?", session['user_id'])
-    return render_template('cart.html')
+    if request.method == 'POST':
+        book_id: str | None = request.form.get('book')
+        if not book_id:
+            return apology('Missing borrowing book(somehow)')
+        if book_id in db.execute('SELECT book_id FROM cart WHERE user_id=?', session['user_id'])[0].values():
+            return apology('Book already in cart')
+        db.execute('INSERT INTO cart (user_id,book_id) VALUES (?,?)', session['user_id'], book_id)
+    cart: list[str] = db.execute('SELECT * FROM cart WHERE user_id=?', session['user_id'])
+    return render_template('cart.html', books=cart)

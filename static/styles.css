@@ -1,12 +1,25 @@
-a .noline {
-    text-decoration: none;
+.noline {
+  text-decoration-style: none;
 }
 
 ul {
-    list-style-type: none;
-    max-height: 250px;
+  list-style-type: none;
+  max-height: 250px;
 }
 
 .search {
-    field-sizing: content;
+  field-sizing: content;
+}
+
+.h1-description {
+  margin-inline: 28rem;
+}
+
+.p-description {
+  max-width: 31.25rem;
+}
+
+.resizeLarge {
+  height: 325px;
+  width: 500px;
 }

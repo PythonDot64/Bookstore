@@ -1,9 +1,38 @@
-{% extends "layout.html" %}
-
-{% block title %}
-    Mainpage
-{% endblock %}
-
-{% block main %}
-    <h1>TODO</h1>
-{% endblock %}
+{% extends "layout.html" %} {% block title %} Mainpage {% endblock %} {% block
+main %}
+<h1>Home</h1>
+<br />
+<br />
+<br />
+<br />
+<h1>For You</h1>
+<hr />
+{% if books %}
+<ul>
+  {% for i in range(5) %}
+  <li>
+    <form action="/details" method="post">
+      <div class="mb-3">
+        <input type="hidden" name="url" value="{{ books[i] }}" />
+        <input type="hidden" name="key" value="{{ books[i].key }}" />
+        <input
+          type="hidden"
+          name="image"
+          value="{{ books[i].cover_edition_key }}"
+        />
+        {% if img[i] != 'Image not found' %}
+        <img alt="{{ books[i].title }}" src="{{ img[i] }}" />
+        {% else %}
+        <h5>No image</h5>
+        {% endif %} {{ books[i].title }} [by {% for author_name in
+        books[i].author_name %} {{ author_name }} {% if not loop.last %}, {%
+        endif %} {% endfor %}] ({{ books[i].first_publish_year }})
+        <button class="btn btn-primary" type="submit">View Book</button>
+      </div>
+    </form>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<h3>Search for books to get recommendations</h3>
+{% endif %} {% endblock %}

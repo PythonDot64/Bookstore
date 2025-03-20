@@ -1,5 +1,17 @@
 {% extends 'layout.html' %} {% block title %}Cart{% endblock %} {% block main %}
+{% if books %}
 <ul>
-  <li>Testing</li>
+  {% for book in books %}
+  <li>
+    <form action="/cart" method="post">
+      <div class="mb-3">
+        <input type="hidden" name="book" value="{{ book }}" />
+        <h3>{{ book }}</h3>
+        <button class="btn btn-primary" type="submit">Remove</button>
+      </div>
+    </form>
+  </li>
+  {% endfor %} {% else %}
+  <h3>Your cart is empty</h3>
+  {% endif %} {% endblock %}
 </ul>
-{% endblock %}

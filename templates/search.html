@@ -3,10 +3,15 @@ main %}
 <ul>
   {% for i in range(length) %}
   <li>
-    <form action="/details" method="get">
+    <form action="/details" method="post">
       <div class="mb-3">
+        <input type="hidden" name="url" value="{{ books[i] }}" />
         <input type="hidden" name="key" value="{{ books[i].key }}" />
-        <input type="hidden" name="image" value="{{ img[i] }}" />
+        <input
+          type="hidden"
+          name="image"
+          value="{{ books[i].cover_edition_key }}"
+        />
         {% if img[i] != 'Image not found' %}
         <img alt="{{ books[i].title }}" src="{{ img[i] }}" />
         {% else %}
