@@ -55,7 +55,7 @@ def index() -> str:
             if 'cover_edition_key' not in book:
                 urls.append('Image not found')
                 continue
-            urls.append(f'https://www.covers.openlibrary.org/b/olid/{book['cover_edition_key']}-S.jpg')
+            urls.append(f'https://covers.openlibrary.org/b/olid/{book['cover_edition_key']}-S.jpg')
         return urls
     last_search = db.execute('SELECT search FROM last_search WHERE user_id=?', session['user_id'])
     if len(last_search) < 1:
@@ -159,7 +159,7 @@ def search() -> werkzeug.wrappers.response.Response | tuple[str, int] | str:
         case 'rating2':
             book_url: str = f'https://www.openlibrary.org/search.json?title={search}&sort=rating asc'
         case 'title':
-            book_url: str = f'https://www.openlirary.org/search.json?title={search}&sort=title'
+            book_url: str = f'https://www.openlibrary.org/search.json?title={search}&sort=title'
         case 'year':
             book_url: str = f'https://www.openlibrary.org/search.json?title={search}$sort=new'
         case _:
@@ -188,7 +188,7 @@ def search() -> werkzeug.wrappers.response.Response | tuple[str, int] | str:
 def details() -> tuple[str, int] | str:
     book: str | None = request.form.get('book')
     work: str | None = request.form.get('key')
-    img: Final = f'https://www.covers.openlibrary.org/b/olid/{request.form.get('image')}-L.jpg'
+    img: Final = f'https://covers.openlibrary.org/b/olid/{request.form.get('image')}-L.jpg'
 
     return render_template('details.html', work=general_book_cache.get(f'https://www.openlibrary.org{work}.json').json(), img=img, id=work, book=book)
 
