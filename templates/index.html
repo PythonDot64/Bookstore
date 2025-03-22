@@ -13,7 +13,6 @@ main %}
   <li>
     <form action="/details" method="post">
       <div class="mb-3">
-        <input type="hidden" name="url" value="{{ books[i] }}" />
         <input type="hidden" name="key" value="{{ books[i].key }}" />
         <input
           type="hidden"
@@ -24,7 +23,7 @@ main %}
         <img alt="{{ books[i].title }}" src="{{ img[i] }}" />
         {% else %}
         <h5>No image</h5>
-        {% endif %} {{ books[i].title }} [by {% for author_name in
+        {% endif %} {{ books[i].title }} by [{% for author_name in
         books[i].author_name %} {{ author_name }} {% if not loop.last %}, {%
         endif %} {% endfor %}] ({{ books[i].first_publish_year }})
         <button class="btn btn-primary" type="submit">View Book</button>

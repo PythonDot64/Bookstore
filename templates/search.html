@@ -16,7 +16,7 @@ main %}
         <img alt="{{ books[i].title }}" src="{{ img[i] }}" />
         {% else %}
         <h3>No image</h3>
-        {% endif %} {{ books[i].title }} [by {% for author_name in
+        {% endif %} {{ books[i].title }} by [{% for author_name in
         books[i].author_name %}{{ author_name }}{% if not loop.last %}, {% endif
         %}{% endfor %}] ({{ books[i].first_publish_year }})
         <button class="btn btn-primary" type="submit">View Book</button>

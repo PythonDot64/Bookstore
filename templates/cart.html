@@ -1,17 +1,49 @@
-{% extends 'layout.html' %} {% block title %}Cart{% endblock %} {% block main %}
-{% if books %}
+{% extends 'layout.html' %} {% block title %} Cart {% endblock %} {% block main
+%} {% if items %}
 <ul>
-  {% for book in books %}
+  {% for i in range(items | length) %}
   <li>
-    <form action="/cart" method="post">
-      <div class="mb-3">
-        <input type="hidden" name="book" value="{{ book }}" />
-        <h3>{{ book }}</h3>
-        <button class="btn btn-primary" type="submit">Remove</button>
-      </div>
-    </form>
+    <div class="mb-3 d-flex justify-content-center align-items-center gap-5">
+      {% if imgs[i] != 'No image avaliable' %}
+      <img
+        alt="{{ books[i].title }}"
+        src="https://covers.openlibrary.org/b/id/{{ imgs[i] }}-M.jpg"
+      />
+      {% else %}
+      <h3>No image avaliable</h3>
+      {% endif %}
+      <h3>{{ books[i].title }}</h3>
+      <form action="/cart" method="post">
+        <input type="hidden" name="book" value="{{ items[i].book_id }}" />
+        <input type="hidden" name="cart_id" value="{{ items[i].cart_id }}" />
+        <button
+          class="btn btn-danger"
+          type="submit"
+          name="check-in"
+          value="True"
+          onclick="return confirm('Are you sure you want to return this book?')"
+        >
+          return
+        </button>
+      </form>
+      <form action="/details" method="post">
+        <input type="hidden" name="key" value="{{ items[i].book_id }}" />
+        <input type="hidden" name="json" value="True" />
+        <input
+          type="hidden"
+          name="image"
+          value="https://covers.openlibrary.org/b/id/{{ imgs[i] }}.json"
+        />
+        <button class="btn btn-primary" type="submit">View book</button>
+      </form>
+      <form action="/content" method="post">
+        <input type="hidden" name="key" value="{{ items[i].book_id }}" />
+        <input type="hidden" name="book_title" value="{{ books[i].title }}" />
+        <button class="btn btn-primary" type="submit">See book content</button>
+      </form>
+    </div>
   </li>
-  {% endfor %} {% else %}
-  <h3>Your cart is empty</h3>
-  {% endif %} {% endblock %}
 </ul>
+{% endfor %} {% else %}
+<h3>Your cart is empty</h3>
+{% endif %} {% endblock %}

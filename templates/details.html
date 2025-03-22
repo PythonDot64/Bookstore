@@ -3,11 +3,16 @@
 <hr />
 <div class="d-flex align-items-center">
   <div class="d-flex justify-content-center flex-column">
+    {% if img != 'No image avaliabe' %}
     <img
       alt="{{ book.title }}"
       src="{{ img }}"
       class="rounded float-start img-thumbnail resizeLarge"
     />
+    <p>Image source: <a href="{{ img }}">{{ img }}</a></p>
+    {% else %}
+    <h1>No image image avaliable</h1>
+    {% endif %}
     <form action="/cart" method="post">
       <input type="hidden" name="book" value="{{ id }}" />
       <button class="btn btn-primary" style="margin-top: 50px">Borrow</button>
@@ -15,11 +20,7 @@
   </div>
   <div class="mb-3 d-flex flex-column align-items-center">
     <h1 class="mb-3 h1-description">Description:</h1>
-    {% if work.description %}
-    <p class="p-description">{{ work.description.value }}</p>
-    {% else %}
-    <p class="p-description">No description available</p>
-    {% endif %}
+    <p class="p-description">{{ description }}</p>
   </div>
 </div>
 {% endblock %}

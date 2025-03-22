@@ -5,7 +5,7 @@ from flask import redirect, render_template, session
 from functools import wraps
 
 
-def apology(message: str, code: int=400) -> tuple[str, int]:
+def apology(message: str, code: int=400, escape_chars=True) -> tuple[str, int]:
     """Render message as an apology to user."""
 
     def escape(s: str) -> str:
@@ -26,8 +26,9 @@ def apology(message: str, code: int=400) -> tuple[str, int]:
         ]:
             s = s.replace(old, new)
         return s
-
-    return render_template("apology.html", top=code, bottom=escape(message)), code
+    if escape_chars:
+        return render_template("apology.html", top=code, bottom=escape(message)), code
+    return render_template("apology.html", top=code, bottom=message), code
 
 
 def login_required(f):
