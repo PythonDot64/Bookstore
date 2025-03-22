@@ -127,35 +127,22 @@
         </div>
       </div>
     </nav>
-    <div class="container py-5 text-center">{% block main %}{% endblock %}</div>
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
+    <div class="container py-5 text-center align-items-center flex-column">
+      {% block main %}
+      <footer
+        style="
+          display: table;
+          text-align: center;
+          margin-left: auto;
+          margin-right: auto;
+        "
+      >
+        <h4>
+          <a href="/credits">credits</a>
+        </h4>
+        <a href="/license"><h4>license</h4></a>
+      </footer>
+      {% endblock %}
+    </div>
   </body>
-  <footer
-    style="
-      display: table;
-      text-align: center;
-      margin-left: auto;
-      margin-right: auto;
-    "
-  >
-    <h5>
-      <a href="/credits">credits</a>
-    </h5>
-    <p>license: <a href="/license"></a></p>
-  </footer>
 </html>
