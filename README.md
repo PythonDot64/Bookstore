@@ -5,7 +5,8 @@
 ### Note
 
 Ensure your python version is 3.x not 2.x since I don't think an old version of python will work on this program
-Also this program isn't very optimazied so it might be pretty slow
+Also this program isn't very optimized so it might be pretty slow
+This took a long time so the styles in the code might be different
 
 ### Description
 
@@ -17,7 +18,7 @@ An online website that is basically a library, on which you can borrow various b
 2. Clone the repository by downloading it with `git clone https://github.com/me50/PythonDot64/tree/cs50/problems/2022/python/project` or you can download it manually
 3. Use `pip install -r requirements.txt` to install the dependicies
 4. Then `cd Downloads & tar -xf Bookstore.zip` or something like that in your os
-5. Finally run `cd Bookstore & flask run app.py` and click on the url it shows you (I.E: http://\<ip address here>:5000)
+5. Finally run `cd Bookstore & flask run app.py` and click on the url it shows you (I.E: <http://127.0.0.1:5000>)
 
 ### Guide
 

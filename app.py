@@ -62,7 +62,7 @@ def index() -> str:
         Retrieves the URLs for the book covers.
 
         Args:
-            books (list[dict]): List of books for which cover URLs are needed.
+            books (list[dict]): List of books for cover URLs.
 
         Returns:
             list[str]: List of URLs for the book covers.
@@ -146,7 +146,7 @@ def register() -> tuple[str, int] | str | werkzeug.wrappers.response.Response:
     Registers a new user.
 
     Handles both GET and POST requests. For GET requests, it displays the registration page.
-    For POST requests, it validates the input, checks for username availability, and registers
+    For POST requests, it validates the input, check if username already exist, and registers
     the user.
 
     Returns:
@@ -210,7 +210,7 @@ def search() -> werkzeug.wrappers.response.Response | tuple[str, int] | str:
     Displays search results for books based on the user's query.
 
     Uses OpenLibrary's search API to fetch and display books based on the user's input.
-    Allows sorting by various criteria.
+    Allows sorting in various ways.
 
     Returns:
         werkzeug.wrappers.response.Response | tuple[str, int] | str: Rendered search results
@@ -225,7 +225,7 @@ def search() -> werkzeug.wrappers.response.Response | tuple[str, int] | str:
         Retrieves URLs for book covers.
 
         Args:
-            books (list[dict]): List of books for which cover URLs are needed.
+            books (list[dict]): List of books for cover URLs.
 
         Returns:
             list[str]: List of URLs for the book covers.
