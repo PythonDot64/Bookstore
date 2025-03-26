@@ -46,73 +46,79 @@
                 <button class="nav-link">Borrowed books</button>
               </form>
             </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/credits">Credits</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/license">license</a>
+            </li>
           </ul>
-          <form class="form-inline" action="/search" method="get">
-            <div class="form-group d-flex align-items-center">
-              <input
-                class="search form-control"
-                type="search"
-                placeholder="Search"
-                aria-label="Search"
-                name="q"
-              />
-              <div class="dropdown">
-                <button
-                  class="btn btn-outline-success dropdown-toggle"
-                  type="button"
-                  id="dropdownMenu2"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  Search
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
-                  <h6 class="dropdown-header">Sort by:</h6>
-                  <li>
-                    <button
-                      class="dropdown-item"
-                      name="sort"
-                      value="random"
-                      type="submit"
-                    >
-                      Random (somewhat)
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      class="dropdown-item"
-                      name="sort"
-                      value="title"
-                      type="submit"
-                    >
-                      Title
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      class="dropdown-item"
-                      name="sort"
-                      value="rating1"
-                      type="submit"
-                    >
-                      Rating (best to worst)
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      class="dropdown-item"
-                      name="sort"
-                      value="rating2"
-                      type="submit"
-                    >
-                      Rating (worst to best)
-                    </button>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </form>
           <ul class="navbar-nav ms-auto mt-2">
+            <form class="form-inline" action="/search" method="get">
+              <div class="form-group d-flex align-items-center">
+                <input
+                  class="search form-control"
+                  type="search"
+                  placeholder="Search"
+                  aria-label="Search"
+                  name="q"
+                />
+                <div class="dropdown">
+                  <button
+                    class="btn btn-outline-success dropdown-toggle"
+                    type="button"
+                    id="dropdownMenu2"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    Search
+                  </button>
+                  <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                    <h6 class="dropdown-header">Sort by:</h6>
+                    <li>
+                      <button
+                        class="dropdown-item"
+                        name="sort"
+                        value="random"
+                        type="submit"
+                      >
+                        Random (somewhat)
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        class="dropdown-item"
+                        name="sort"
+                        value="title"
+                        type="submit"
+                      >
+                        Title
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        class="dropdown-item"
+                        name="sort"
+                        value="rating1"
+                        type="submit"
+                      >
+                        Rating (best to worst)
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        class="dropdown-item"
+                        name="sort"
+                        value="rating2"
+                        type="submit"
+                      >
+                        Rating (worst to best)
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </form>
             <li class="nav-item">
               <a class="nav-link" href="/logout">Log Out</a>
             </li>

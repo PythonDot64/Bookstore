@@ -3,11 +3,12 @@
 <ul>
   {% for i in range(items | length) %}
   <li>
-    <div class="mb-3 d-flex justify-content-center align-items-center gap-5">
+    <div class="mb-3 d-flex align-items-center gap-5 float-left">
       {% if imgs[i] != 'No image avaliable' %}
       <img
         alt="{{ books[i].title }}"
         src="https://covers.openlibrary.org/b/id/{{ imgs[i] }}-M.jpg"
+        class="rounded float-start"
       />
       {% else %}
       <h3>No image avaliable</h3>
@@ -43,7 +44,8 @@
       </form>
     </div>
   </li>
+  {% endfor %}
 </ul>
-{% endfor %} {% else %}
+{% else %}
 <h3>Your cart is empty</h3>
 {% endif %} {% endblock %}
