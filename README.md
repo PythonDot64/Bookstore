@@ -12,10 +12,10 @@ An online website that is basically a library, on which you can borrow various b
 
 ### How to download and run
 
-1. Ensure you have git installed, if you don't visit this [website](https://git-scm.com/)
+1. Ensure you have git installed. If you don't, visit this [website](https://git-scm.com/)
 2. Clone the repository by downloading it with `git clone https://github.com/PythonDot64/Bookstore` or you can download it manually
 3. Use `pip install -r requirements.txt` to install the dependicies
-4. Then `cd Downloads & tar -xf Bookstore.zip` or something like that in your os
+4. Then `cd Downloads & tar -xf Bookstore.zip` or the equivalent for your OS
 5. Finally run `cd Bookstore & flask run app.py` and click on the url it shows you (I.E: <http://127.0.0.1:5000>)
 
 ### Guide
