@@ -1,7 +1,5 @@
 # Online library
 
-### Video Demo:  <https://www.youtube.com/watch?v=cdyzbL6S_g4>
-
 ### Note
 
 Ensure your python version is 3.x not 2.x since I don't think an old version of python will work on this program
